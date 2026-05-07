@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { vehicleController } from '../controllers/vehicle.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
+import { roleMiddleware } from '../middlewares/role.middleware';
 import { validate } from '../middlewares/validate.middleware';
 import {
   createVehicleSchema,
@@ -18,6 +19,22 @@ export const vehicleRoutes = Router();
  */
 
 vehicleRoutes.use(authMiddleware);
+
+/**
+ * @swagger
+ * /vehicles:
+ *   get:
+ *     summary: List all vehicles
+ *     tags: [Vehicles]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Vehicles retrieved successfully
+ *       403:
+ *         description: Admin role required
+ */
+vehicleRoutes.get('/', roleMiddleware('ADMIN'), vehicleController.getAll);
 
 /**
  * @swagger
