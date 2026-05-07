@@ -86,7 +86,7 @@ src/
 ### 1. Clonar el proyecto
 
 ```bash
-cd C:\Users\kevin\street-race-x-api
+git clone https://github.com/Kevin20034/Street-Race-X.git
 ```
 
 ### 2. Instalar dependencias
