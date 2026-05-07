@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum Rank {
+  D
+  C
+  B
+  A
+  S
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum NotificationType {
+  CHALLENGE_RECEIVED
+  CHALLENGE_ACCEPTED
+  CHALLENGE_REJECTED
+  CHALLENGE_COMPLETED
+  RANK_UPGRADED
+  SYSTEM
+}
+
+model User {
+  id                  String         @id @default(uuid())
+  name                String
+  email               String         @unique
+  password            String
+  role                UserRole       @default(USER)
+  rank                Rank           @default(D)
+  consecutiveWins     Int            @default(0)
+  totalWins           Int            @default(0)
+  totalLosses         Int            @default(0)
+  isActive            Boolean        @default(true)
+
+  vehicles            Vehicle[]
+  sentChallenges      Challenge[]    @relation("SentChallenges")
+  receivedChallenges  Challenge[]    @relation("ReceivedChallenges")
+  wonChallenges       Challenge[]    @relation("WonChallenges")
+  notifications       Notification[]
+
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model Vehicle {
+  id          String      @id @default(uuid())
+  userId      String
+  name        String
+  brand       String
+  model       String
+  year        Int
+  type        VehicleType
+  horsepower  Int
+  isActive    Boolean     @default(false)
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengesAsSenderVehicle   Challenge[] @relation("SenderVehicle")
+  challengesAsReceiverVehicle Challenge[] @relation("ReceiverVehicle")
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model Challenge {
+  id                String          @id @default(uuid())
+
+  senderId          String
+  receiverId        String
+  senderVehicleId   String
+  receiverVehicleId String?
+
+  categoryId        String?
+  status            ChallengeStatus @default(PENDING)
+  winnerId          String?
+
+  message           String?
+  location          String?
+  scheduledAt       DateTime?
+
+  sender            User            @relation("SentChallenges", fields: [senderId], references: [id])
+  receiver          User            @relation("ReceivedChallenges", fields: [receiverId], references: [id])
+  winner            User?           @relation("WonChallenges", fields: [winnerId], references: [id])
+
+  senderVehicle     Vehicle         @relation("SenderVehicle", fields: [senderVehicleId], references: [id])
+  receiverVehicle   Vehicle?        @relation("ReceiverVehicle", fields: [receiverVehicleId], references: [id])
+
+  category          CompetitionCategory? @relation(fields: [categoryId], references: [id])
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  completedAt       DateTime?
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+model CompetitionCategory {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  vehicleType VehicleType?
+
+  challenges  Challenge[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([read])
+}
