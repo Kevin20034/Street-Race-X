@@ -4,6 +4,10 @@ import { vehicleRepository } from '../repositories/vehicle.repository';
 import { AppError } from '../utils/AppError';
 
 export const vehicleService = {
+  async getAllVehicles() {
+    return vehicleRepository.findAll();
+  },
+
   async createVehicle(userId: string, input: CreateVehicleInput) {
     const vehicleCount = await vehicleRepository.countByUserId(userId);
 
