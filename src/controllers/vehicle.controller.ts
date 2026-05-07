@@ -23,6 +23,16 @@ const getAuthenticatedUserId = (req: AuthenticatedRequest): string => {
 };
 
 export const vehicleController = {
+  getAll: (async (_req, res, next) => {
+    try {
+      const vehicles = await vehicleService.getAllVehicles();
+
+      return sendSuccess(res, vehicles, 'Vehicles retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  }) as RequestHandler,
+
   create: (async (req: AuthenticatedRequest, res, next) => {
     try {
       const userId = getAuthenticatedUserId(req);
