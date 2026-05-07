@@ -119,7 +119,9 @@ Crea un archivo llamado `.env` en la raíz del proyecto con el siguiente conteni
 NODE_ENV=development
 PORT=3000
 
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/street_race_x?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/street_race_x?schema=public" forma local
+
+DATABASE_URL="postgresql://neondb_owner:npg_nPlSDF9o6aWG@ep-fancy-violet-aqrhq0ye-pooler.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" forma online con neon
 
 JWT_SECRET="super_secret_change_me"
 JWT_EXPIRES_IN="7d"
@@ -127,7 +129,9 @@ JWT_EXPIRES_IN="7d"
 BCRYPT_SALT_ROUNDS=10
 
 CLIENT_URL="http://localhost:5173"
+
 ```
+
 
 > **Nota:** Ajusta el usuario y contraseña de PostgreSQL según tu configuración local.
 
