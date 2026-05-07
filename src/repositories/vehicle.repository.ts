@@ -16,6 +16,25 @@ const vehicleSelect = {
 };
 
 export const vehicleRepository = {
+  findAll() {
+    return prisma.vehicle.findMany({
+      select: {
+        ...vehicleSelect,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            rank: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  },
+
   countByUserId(userId: string) {
     return prisma.vehicle.count({
       where: { userId },
@@ -98,3 +117,4 @@ export const vehicleRepository = {
     });
   },
 };
+
