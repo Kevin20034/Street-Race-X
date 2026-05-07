@@ -83,70 +83,102 @@ src/
 
 ## 📦 Instalación
 
+### Prerrequisitos
+
+Antes de comenzar, asegúrate de tener instalado:
+
+- **Node.js** 18 o superior
+- **PostgreSQL** (base de datos)
+- **Git** (para clonar el repositorio)
+- **VS Code** (opcional, recomendado para desarrollo)
+
 ### 1. Clonar el proyecto
 
 ```bash
-git clone https://github.com/Kevin20034/Street-Race-X.git
+git clone URL_DEL_REPOSITORIO
+cd street-race-x-api
 ```
 
 ### 2. Instalar dependencias
 
+**En Windows PowerShell:**
+```bash
+npm.cmd install
+```
+
+**En CMD, Git Bash, macOS o Linux:**
 ```bash
 npm install
 ```
 
----
+### 3. Crear archivo .env
 
-## ⚙️ Configuración
-
-### Variables de Entorno
-
-Crear archivo `.env` en la raíz del proyecto:
+Crea un archivo llamado `.env` en la raíz del proyecto con el siguiente contenido:
 
 ```env
-# Servidor
 NODE_ENV=development
 PORT=3000
 
-# Base de datos
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/street_race_x?schema=public"
 
-# JWT
 JWT_SECRET="super_secret_change_me"
 JWT_EXPIRES_IN="7d"
 
-# Seguridad
 BCRYPT_SALT_ROUNDS=10
 
-# Cliente Frontend
 CLIENT_URL="http://localhost:5173"
 ```
 
-### Base de Datos
+> **Nota:** Ajusta el usuario y contraseña de PostgreSQL según tu configuración local.
 
-1. **Crear base de datos en PostgreSQL:**
-   ```bash
-   CREATE DATABASE street_race_x;
-   ```
+### 4. Crear base de datos
 
-2. **Ejecutar migraciones:**
-   ```bash
-   npx prisma migrate dev
-   ```
+En PostgreSQL, crea una base de datos llamada `street_race_x`. Puedes hacerlo desde pgAdmin o ejecutando el siguiente comando SQL:
 
-3. **Generar cliente Prisma:**
-   ```bash
-   npx prisma generate
-   ```
+```sql
+CREATE DATABASE street_race_x;
+```
 
-4. **Abrir Prisma Studio (opcional):**
-   ```bash
-   npx prisma studio
-   ```
+### 5. Ejecutar migraciones Prisma
+
+**En Windows PowerShell:**
+```bash
+npx.cmd prisma migrate dev
+```
+
+**En otros sistemas:**
+```bash
+npx prisma migrate dev
+```
+
+Luego, genera el cliente de Prisma:
+
+```bash
+npx prisma generate
+```
+
+### 6. Levantar el servidor
+
+**En Windows PowerShell:**
+```bash
+npm.cmd run dev
+```
+
+**En otros sistemas:**
+```bash
+npm run dev
+```
+
+### 7. Probar la API
+
+- **Health check:** http://localhost:3000/api/health
+- **Documentación Swagger:** http://localhost:3000/api/docs
 
 ---
 
 ## 🚀 Ejecución
+
+Una vez completados los pasos de instalación, el servidor ya estará corriendo. Si necesitas reiniciarlo:
 
 ### Modo Desarrollo
 
