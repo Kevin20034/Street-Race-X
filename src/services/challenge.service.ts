@@ -1,8 +1,10 @@
+import { ChallengeStatus } from '@prisma/client';
 import { CompleteChallengeInput, CreateChallengeInput } from '../models/challenge.schemas';
 import { challengeRepository } from '../repositories/challenge.repository';
 import { userRepository } from '../repositories/user.repository';
 import { vehicleRepository } from '../repositories/vehicle.repository';
 import { AppError } from '../utils/AppError';
+import { assertChallengeTransition } from '../utils/challengeStateMachine';
 import { getNextRank, shouldUpgradeRank } from '../utils/rank';
 import { notificationService } from './notification.service';
 
@@ -98,11 +100,9 @@ export const challengeService = {
       throw new AppError('Only the receiver can accept this challenge', 403);
     }
 
-    if (challenge.status !== 'PENDING') {
-      throw new AppError('Only pending challenges can be accepted', 400);
-    }
+    assertChallengeTransition(challenge.status, ChallengeStatus.ACCEPTED);
 
-    const updatedChallenge = await challengeRepository.updateStatus(id, 'ACCEPTED');
+    const updatedChallenge = await challengeRepository.updateStatus(id, ChallengeStatus.ACCEPTED);
 
     await notificationService.createAndEmit({
       userId: challenge.senderId,
@@ -127,11 +127,9 @@ export const challengeService = {
       throw new AppError('Only the receiver can reject this challenge', 403);
     }
 
-    if (challenge.status !== 'PENDING') {
-      throw new AppError('Only pending challenges can be rejected', 400);
-    }
+    assertChallengeTransition(challenge.status, ChallengeStatus.REJECTED);
 
-    const updatedChallenge = await challengeRepository.updateStatus(id, 'REJECTED');
+    const updatedChallenge = await challengeRepository.updateStatus(id, ChallengeStatus.REJECTED);
 
     await notificationService.createAndEmit({
       userId: challenge.senderId,
@@ -156,11 +154,9 @@ export const challengeService = {
       throw new AppError('Only the sender can cancel this challenge', 403);
     }
 
-    if (challenge.status !== 'PENDING') {
-      throw new AppError('Only pending challenges can be cancelled', 400);
-    }
+    assertChallengeTransition(challenge.status, ChallengeStatus.CANCELLED);
 
-    return challengeRepository.updateStatus(id, 'CANCELLED');
+    return challengeRepository.updateStatus(id, ChallengeStatus.CANCELLED);
   },
 
   async completeChallenge(userId: string, id: string, input: CompleteChallengeInput) {
@@ -174,9 +170,7 @@ export const challengeService = {
       throw new AppError('Only challenge participants can complete this challenge', 403);
     }
 
-    if (challenge.status !== 'ACCEPTED') {
-      throw new AppError('Only accepted challenges can be completed', 400);
-    }
+    assertChallengeTransition(challenge.status, ChallengeStatus.COMPLETED);
 
     if (input.winnerId !== challenge.senderId && input.winnerId !== challenge.receiverId) {
       throw new AppError('Winner must be one of the challenge participants', 400);

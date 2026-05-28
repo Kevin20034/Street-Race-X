@@ -2,6 +2,7 @@ import { VehicleType } from '@prisma/client';
 import { CreateVehicleInput, UpdateVehicleInput } from '../models/vehicle.schemas';
 import { vehicleRepository } from '../repositories/vehicle.repository';
 import { AppError } from '../utils/AppError';
+import { assertVehicleCanBeActivated } from '../utils/vehicleState';
 
 export const vehicleService = {
   async getAllVehicles() {
@@ -81,6 +82,8 @@ export const vehicleService = {
     if (vehicle.userId !== userId) {
       throw new AppError('You can only activate your own vehicles', 403);
     }
+
+    assertVehicleCanBeActivated(vehicle);
 
     await vehicleRepository.deactivateAllByUserId(userId);
 

@@ -76,7 +76,7 @@ export const challengeRepository = {
     return prisma.challenge.update({
       where: { id },
       data: {
-        status: 'COMPLETED',
+        status: ChallengeStatus.COMPLETED,
         winnerId,
         completedAt: new Date(),
       },

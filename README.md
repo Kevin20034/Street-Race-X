@@ -349,3 +349,111 @@ El backend está **funcional y listo** para la primera entrega.
 ## 👨‍💻 Autor
 
 **Kevin** - Desarrollo Full Stack
+
+---
+
+## Pruebas Unitarias, Cobertura y Docker
+
+El proyecto usa **Vitest** para pruebas unitarias y cobertura.
+
+Ejecutar pruebas:
+
+```bash
+npm run test
+```
+
+En Windows PowerShell:
+
+```bash
+npm.cmd run test
+```
+
+Ejecutar pruebas con cobertura:
+
+```bash
+npm run test:coverage
+```
+
+En Windows PowerShell:
+
+```bash
+npm.cmd run test:coverage
+```
+
+La cobertura minima configurada es del **75%** para statements, branches, functions y lines.
+
+El reporte HTML de cobertura se genera en:
+
+```text
+coverage/
+```
+
+Para base de datos de pruebas se incluye Docker Compose:
+
+```text
+docker-compose.test.yml
+```
+
+Levantar PostgreSQL de pruebas:
+
+```bash
+npm run test:db:up
+```
+
+En Windows PowerShell:
+
+```bash
+npm.cmd run test:db:up
+```
+
+Apagar PostgreSQL de pruebas:
+
+```bash
+npm run test:db:down
+```
+
+En Windows PowerShell:
+
+```bash
+npm.cmd run test:db:down
+```
+
+La URL de pruebas esta documentada en:
+
+```text
+.env.test.example
+```
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/street_race_x_test?schema=public"
+```
+
+## Enums y State Machines
+
+El proyecto usa enums de Prisma para estados importantes:
+
+- `ChallengeStatus`
+- `VehicleType`
+- `Rank`
+- `NotificationType`
+
+La transicion de estados de retos esta centralizada en:
+
+```text
+src/utils/challengeStateMachine.ts
+```
+
+Esto evita transiciones invalidas como:
+
+```text
+COMPLETED -> ACCEPTED
+REJECTED -> COMPLETED
+```
+
+El estado activo/inactivo de vehiculos esta encapsulado en:
+
+```text
+src/utils/vehicleState.ts
+```
+
+Asi la logica de estado no queda dispersa como booleanos sin contexto.
