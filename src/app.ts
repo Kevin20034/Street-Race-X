@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
 import { swaggerSpec } from './config/swagger';
@@ -17,6 +18,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/api/docs.json', (_req, res) => {
   res.json(swaggerSpec);

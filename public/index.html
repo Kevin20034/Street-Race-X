@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Street Race X</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Street Race X</p>
+        <h1>Race Control</h1>
+      </div>
+      <nav class="top-actions">
+        <a href="/api/docs" target="_blank">Swagger</a>
+        <button id="logoutBtn" class="ghost hidden" type="button">Salir</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel auth-panel">
+        <div class="section-title">
+          <h2>Sesion</h2>
+          <span id="sessionBadge" class="badge muted">Sin sesion</span>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-auth-tab="login" type="button">Login</button>
+          <button class="tab" data-auth-tab="register" type="button">Registro</button>
+        </div>
+
+        <form id="loginForm" class="stack">
+          <label>
+            Email
+            <input name="email" type="email" value="kevin@test.com" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" value="123456" required />
+          </label>
+          <button type="submit">Iniciar sesion</button>
+        </form>
+
+        <form id="registerForm" class="stack hidden">
+          <label>
+            Nombre
+            <input name="name" type="text" placeholder="Racer Demo" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" placeholder="demo@test.com" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" value="123456" required />
+          </label>
+          <button type="submit">Crear cuenta</button>
+        </form>
+
+        <div id="profileCard" class="profile-card hidden"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Vehiculos</h2>
+          <button id="refreshVehiclesBtn" class="ghost" type="button">Actualizar</button>
+        </div>
+
+        <form id="vehicleForm" class="grid-form">
+          <input name="name" placeholder="Nombre" value="Night Fury" required />
+          <input name="brand" placeholder="Marca" value="Nissan" required />
+          <input name="model" placeholder="Modelo" value="Skyline R34" required />
+          <input name="year" type="number" placeholder="Ano" value="1999" required />
+          <select name="type" required>
+            <option value="CAR">CAR</option>
+            <option value="MOTORCYCLE">MOTORCYCLE</option>
+          </select>
+          <input name="horsepower" type="number" placeholder="HP" value="480" required />
+          <button type="submit">Crear vehiculo</button>
+        </form>
+
+        <div id="vehiclesList" class="card-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Retos</h2>
+          <button id="refreshChallengesBtn" class="ghost" type="button">Actualizar</button>
+        </div>
+
+        <form id="challengeForm" class="stack">
+          <label>
+            ID del rival
+            <input name="receiverId" placeholder="UUID del usuario rival" required />
+          </label>
+          <label>
+            ID de mi vehiculo
+            <input name="senderVehicleId" placeholder="UUID del vehiculo activo" required />
+          </label>
+          <label>
+            Mensaje
+            <input name="message" placeholder="Carrera esta noche" />
+          </label>
+          <label>
+            Ubicacion
+            <input name="location" placeholder="Avenida Central" />
+          </label>
+          <button type="submit">Crear reto</button>
+        </form>
+
+        <div id="challengesList" class="card-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Notificaciones</h2>
+          <button id="refreshNotificationsBtn" class="ghost" type="button">Actualizar</button>
+        </div>
+        <div id="notificationsList" class="card-list"></div>
+      </section>
+    </main>
+
+    <aside id="toast" class="toast hidden"></aside>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
