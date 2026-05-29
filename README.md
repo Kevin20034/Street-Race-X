@@ -288,7 +288,7 @@ Antes de ejecutar el proyecto necesitas instalar:
 * VS Code (opcional)
 * Conexión a Internet
 
-> No necesitas instalar PostgreSQL local si utilizarás Neon.
+
 
 ---
 
@@ -341,7 +341,7 @@ BCRYPT_SALT_ROUNDS=10
 CLIENT_URL="http://localhost:5173"
 ```
 
-> ⚠️ Importante: no subas este archivo a GitHub.
+
 
 ---
 
