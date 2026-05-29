@@ -273,187 +273,257 @@ Flujo recomendado para presentar el proyecto:
 12. Repetir una segunda victoria para ver la **subida de rango**
 13. Consultar notificaciones
 
+# Street Race X API
+
+Backend API para el proyecto **Street Race X**, desarrollado con Node.js, Prisma y PostgreSQL usando Neon.
+
 ---
 
-## 📝 Ejemplos
+# Requisitos
 
-### Registro de Usuario
+Antes de ejecutar el proyecto necesitas instalar:
+
+* Node.js 18 o superior
+* Git
+* VS Code (opcional)
+* Conexión a Internet
+
+> No necesitas instalar PostgreSQL local si utilizarás Neon.
+
+---
+
+# Clonar el proyecto
+
+```bash
+git clone URL_DEL_REPOSITORIO
+cd street-race-x-api
+```
+
+---
+
+# Instalar dependencias
+
+## En PowerShell
+
+```powershell
+npm.cmd install
+```
+
+## En CMD, Git Bash, macOS o Linux
+
+```bash
+npm install
+```
+
+---
+
+# Configurar variables de entorno
+
+En la raíz del proyecto crea un archivo llamado:
+
+```bash
+.env
+```
+
+Agrega el siguiente contenido:
+
+```env
+NODE_ENV=development
+PORT=3000
+
+DATABASE_URL="postgresql://neondb_owner:npg_nPlSDF9o6aWG@ep-fancy-violet-aqrhq0ye-pooler.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+JWT_SECRET="super_secret_change_me"
+JWT_EXPIRES_IN="7d"
+
+BCRYPT_SALT_ROUNDS=10
+
+CLIENT_URL="http://localhost:5173"
+```
+
+> ⚠️ Importante: no subas este archivo a GitHub.
+
+---
+
+# Configuración de Prisma
+
+## Archivo `prisma.config.ts`
+
+Debe existir en la raíz del proyecto:
+
+```ts
+import 'dotenv/config';
+import { defineConfig, env } from 'prisma/config';
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: {
+    path: 'prisma/migrations',
+  },
+  datasource: {
+    url: env('DATABASE_URL'),
+  },
+});
+```
+
+---
+
+## Archivo `prisma/schema.prisma`
+
+El datasource debe estar configurado así:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+}
+```
+
+> Esta configuración es correcta para Prisma 7.
+
+---
+
+# Generar Prisma Client
+
+## En PowerShell
+
+```powershell
+npx.cmd prisma generate
+```
+
+## En otros sistemas
+
+```bash
+npx prisma generate
+```
+
+---
+
+# Ejecutar migraciones en Neon
+
+Si la base de datos Neon ya tiene las tablas creadas puedes omitir este paso.
+
+## En PowerShell
+
+```powershell
+npx.cmd prisma migrate dev
+```
+
+## En otros sistemas
+
+```bash
+npx prisma migrate dev
+```
+
+Esto creará las tablas necesarias en Neon.
+
+---
+
+# Levantar el proyecto
+
+## En PowerShell
+
+```powershell
+npm.cmd run dev
+```
+
+Debe mostrarse algo como:
+
+```bash
+Street Race X API running on http://localhost:3000
+```
+
+---
+
+# URLs importantes
+
+## Frontend
+
+```txt
+http://localhost:3000/
+```
+
+## Swagger
+
+```txt
+http://localhost:3000/api/docs
+```
+
+## Health Check
+
+```txt
+http://localhost:3000/api/health
+```
+
+---
+
+# Login de prueba
+
+Si Neon ya contiene datos puedes iniciar sesión con:
 
 ```json
 {
-  "name": "Kevin Racer",
   "email": "kevin@test.com",
   "password": "123456"
 }
 ```
 
-### Crear Vehículo
-
-```json
-{
-  "name": "Night Fury",
-  "brand": "Nissan",
-  "model": "Skyline R34",
-  "year": 1999,
-  "type": "CAR",
-  "horsepower": 480
-}
-```
-
-### Crear Reto
-
-```json
-{
-  "receiverId": "uuid-del-rival",
-  "senderVehicleId": "uuid-del-vehiculo",
-  "message": "Carrera esta noche",
-  "location": "Avenida Central"
-}
-```
+Si la base de datos está vacía puedes registrar usuarios desde el frontend o Swagger.
 
 ---
 
-## ✅ Buenas Prácticas Aplicadas
+# Pruebas unitarias
 
-- ✔️ Separación clara de responsabilidades
-- ✔️ TypeScript con tipado estricto
-- ✔️ Validación de datos con Zod
-- ✔️ Manejo centralizado de errores
-- ✔️ Respuestas HTTP estandarizadas
-- ✔️ Contraseñas hasheadas con bcrypt
-- ✔️ Autenticación JWT segura
-- ✔️ Autorización por roles
-- ✔️ ORM Prisma para seguridad BD
-- ✔️ Documentación Swagger completa
-- ✔️ Estructura MVC escalable
+Las pruebas unitarias utilizan mocks y no dependen de Neon.
 
----
+## Ejecutar pruebas
 
-## 📊 Estado del Proyecto
-
-El backend está **funcional y listo** para la primera entrega.
-
-### Características Incluidas
-
-✅ Autenticación con JWT  
-✅ Gestión de usuarios  
-✅ Gestión de vehículos  
-✅ Sistema completo de retos  
-✅ Sistema de rangos dinámico  
-✅ Notificaciones en tiempo real  
-✅ Socket.io preparado  
-✅ Documentación Swagger interactiva  
-
----
-
-## 👨‍💻 Autor
-
-**Kevin** - Desarrollo Full Stack
-
----
-
-## Pruebas Unitarias, Cobertura y Docker
-
-El proyecto usa **Vitest** para pruebas unitarias y cobertura.
-
-Ejecutar pruebas:
-
-```bash
-npm run test
-```
-
-En Windows PowerShell:
-
-```bash
+```powershell
 npm.cmd run test
 ```
 
-Ejecutar pruebas con cobertura:
+## Ejecutar cobertura
 
-```bash
-npm run test:coverage
-```
-
-En Windows PowerShell:
-
-```bash
+```powershell
 npm.cmd run test:coverage
 ```
 
-La cobertura minima configurada es del **75%** para statements, branches, functions y lines.
+> La cobertura debe superar el 75%.
 
-El reporte HTML de cobertura se genera en:
+---
 
-```text
-coverage/
-```
+# Docker para pruebas
 
-Para base de datos de pruebas se incluye Docker Compose:
+Docker es opcional y solo se utiliza para levantar una base de datos local de pruebas.
 
-```text
-docker-compose.test.yml
-```
+## Levantar contenedor
 
-Levantar PostgreSQL de pruebas:
-
-```bash
-npm run test:db:up
-```
-
-En Windows PowerShell:
-
-```bash
+```powershell
 npm.cmd run test:db:up
 ```
 
-Apagar PostgreSQL de pruebas:
+## Detener contenedor
 
-```bash
-npm run test:db:down
-```
-
-En Windows PowerShell:
-
-```bash
+```powershell
 npm.cmd run test:db:down
 ```
 
-La URL de pruebas esta documentada en:
+> Para las pruebas unitarias actuales no es obligatorio utilizar Docker.
 
-```text
-.env.test.example
-```
+---
 
-```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5433/street_race_x_test?schema=public"
-```
+# Tecnologías utilizadas
 
-## Enums y State Machines
+* Node.js
+* Express
+* Prisma ORM
+* PostgreSQL
+* Neon Database
+* JWT Authentication
+* Swagger
+* Jest
 
-El proyecto usa enums de Prisma para estados importantes:
+---
 
-- `ChallengeStatus`
-- `VehicleType`
-- `Rank`
-- `NotificationType`
+# Autor
 
-La transicion de estados de retos esta centralizada en:
-
-```text
-src/utils/challengeStateMachine.ts
-```
-
-Esto evita transiciones invalidas como:
-
-```text
-COMPLETED -> ACCEPTED
-REJECTED -> COMPLETED
-```
-
-El estado activo/inactivo de vehiculos esta encapsulado en:
-
-```text
-src/utils/vehicleState.ts
-```
-
-Asi la logica de estado no queda dispersa como booleanos sin contexto.
+Proyecto desarrollado para Street Race X.
