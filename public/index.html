@@ -91,12 +91,16 @@
 
         <form id="challengeForm" class="stack">
           <label>
-            ID del rival
-            <input name="receiverId" placeholder="UUID del usuario rival" required />
+            Rival
+            <select id="receiverSelect" name="receiverId" required>
+              <option value="">Inicia sesion para cargar rivales</option>
+            </select>
           </label>
           <label>
-            ID de mi vehiculo
-            <input name="senderVehicleId" placeholder="UUID del vehiculo activo" required />
+            Mi vehiculo
+            <select id="senderVehicleSelect" name="senderVehicleId" required>
+              <option value="">Inicia sesion para cargar vehiculos</option>
+            </select>
           </label>
           <label>
             Mensaje

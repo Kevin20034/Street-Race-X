@@ -7,6 +7,12 @@ export const userService = {
     return userRepository.findAll();
   },
 
+  async getActiveRacers(currentUserId: string) {
+    const racers = await userRepository.findActiveRacers();
+
+    return racers.filter((racer) => racer.id !== currentUserId);
+  },
+
   async getUserById(id: string) {
     const user = await userRepository.findSafeById(id);
 

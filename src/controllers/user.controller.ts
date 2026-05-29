@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { AuthenticatedRequest } from '../models/auth.types';
 import { UpdateUserInput } from '../models/user.schemas';
 import { userService } from '../services/user.service';
 import { sendSuccess } from '../utils/apiResponse';
@@ -8,6 +9,22 @@ type IdParams = {
 };
 
 export const userController = {
+  getRacers: (async (req: AuthenticatedRequest, res, next) => {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        throw new Error('Authenticated user not found in request');
+      }
+
+      const users = await userService.getActiveRacers(userId);
+
+      return sendSuccess(res, users, 'Racers retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  }) as RequestHandler,
+
   getAll: (async (_req, res, next) => {
     try {
       const users = await userService.getAllUsers();

@@ -33,6 +33,22 @@ userRoutes.get('/', authMiddleware, roleMiddleware('ADMIN'), userController.getA
 
 /**
  * @swagger
+ * /users/racers:
+ *   get:
+ *     summary: List available racers for challenges
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Racers retrieved successfully
+ *       401:
+ *         description: Invalid or missing token
+ */
+userRoutes.get('/racers', authMiddleware, userController.getRacers);
+
+/**
+ * @swagger
  * /users/{id}/public:
  *   get:
  *     summary: Get public user profile

@@ -71,6 +71,25 @@ export const userRepository = {
     });
   },
 
+  findActiveRacers() {
+    return prisma.user.findMany({
+      where: {
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        rank: true,
+        totalWins: true,
+        totalLosses: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  },
+
   create(data: { name: string; email: string; password: string }) {
     return prisma.user.create({
       data,
