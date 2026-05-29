@@ -3,6 +3,8 @@ const API_BASE = '/api';
 const state = {
   token: localStorage.getItem('srx.token') || '',
   user: JSON.parse(localStorage.getItem('srx.user') || 'null'),
+  challenges: [],
+  pendingCompleteChallengeId: '',
 };
 
 const els = {
@@ -16,6 +18,13 @@ const els = {
   challengesList: document.querySelector('#challengesList'),
   notificationsList: document.querySelector('#notificationsList'),
   challengeForm: document.querySelector('#challengeForm'),
+  receiverSelect: document.querySelector('#receiverSelect'),
+  senderVehicleSelect: document.querySelector('#senderVehicleSelect'),
+  completeChallengeModal: document.querySelector('#completeChallengeModal'),
+  completeChallengeForm: document.querySelector('#completeChallengeForm'),
+  winnerSelect: document.querySelector('#winnerSelect'),
+  closeCompleteChallengeModalBtn: document.querySelector('#closeCompleteChallengeModalBtn'),
+  cancelCompleteChallengeBtn: document.querySelector('#cancelCompleteChallengeBtn'),
   refreshVehiclesBtn: document.querySelector('#refreshVehiclesBtn'),
   refreshChallengesBtn: document.querySelector('#refreshChallengesBtn'),
   refreshNotificationsBtn: document.querySelector('#refreshNotificationsBtn'),
@@ -156,10 +165,71 @@ const renderVehicles = (vehicles) => {
     .join('');
 };
 
+const renderReceiverOptions = (racers) => {
+  if (!racers.length) {
+    els.receiverSelect.innerHTML = '<option value="">No hay rivales disponibles</option>';
+    return;
+  }
+
+  els.receiverSelect.innerHTML = [
+    '<option value="">Selecciona un rival</option>',
+    ...racers.map((racer) => `<option value="${racer.id}">${racer.name} (${racer.email})</option>`),
+  ].join('');
+};
+
+const renderSenderVehicleOptions = (vehicles) => {
+  if (!vehicles.length) {
+    els.senderVehicleSelect.innerHTML = '<option value="">Crea un vehiculo primero</option>';
+    return;
+  }
+
+  els.senderVehicleSelect.innerHTML = [
+    '<option value="">Selecciona mi vehiculo</option>',
+    ...vehicles.map(
+      (vehicle) =>
+        `<option value="${vehicle.id}">${vehicle.name} - ${vehicle.brand} ${vehicle.model}${vehicle.isActive ? ' (Activo)' : ''}</option>`,
+    ),
+  ].join('');
+};
+
+const resetChallengeFormOptions = () => {
+  els.receiverSelect.innerHTML = '<option value="">Inicia sesion para cargar rivales</option>';
+  els.senderVehicleSelect.innerHTML = '<option value="">Inicia sesion para cargar vehiculos</option>';
+};
+
+const closeCompleteChallengeDialog = () => {
+  state.pendingCompleteChallengeId = '';
+  els.completeChallengeModal.classList.add('hidden');
+  els.completeChallengeModal.setAttribute('aria-hidden', 'true');
+  els.winnerSelect.innerHTML = '<option value="">Selecciona un participante</option>';
+};
+
+const openCompleteChallengeDialog = (challenge) => {
+  state.pendingCompleteChallengeId = challenge.id;
+  els.winnerSelect.innerHTML = [
+    '<option value="">Selecciona un participante</option>',
+    `<option value="${challenge.sender.id}">${challenge.sender.name}</option>`,
+    `<option value="${challenge.receiver.id}">${challenge.receiver.name}</option>`,
+  ].join('');
+
+  els.completeChallengeModal.classList.remove('hidden');
+  els.completeChallengeModal.setAttribute('aria-hidden', 'false');
+  els.winnerSelect.focus();
+};
+
 const loadVehicles = async () => {
-  if (!state.token) return;
+  if (!state.token) return [];
   const response = await request('/vehicles/me');
   renderVehicles(response.data);
+  renderSenderVehicleOptions(response.data);
+  return response.data;
+};
+
+const loadRacers = async () => {
+  if (!state.token) return [];
+  const response = await request('/users/racers');
+  renderReceiverOptions(response.data);
+  return response.data;
 };
 
 const renderChallenges = (challenges) => {
@@ -217,6 +287,7 @@ const renderChallenges = (challenges) => {
 const loadChallenges = async () => {
   if (!state.token) return;
   const response = await request('/challenges/me');
+  state.challenges = response.data;
   renderChallenges(response.data);
 };
 
@@ -262,7 +333,13 @@ const loadNotifications = async () => {
 
 const refreshDashboard = async () => {
   if (!state.token) return;
-  await Promise.allSettled([refreshMe(), loadVehicles(), loadChallenges(), loadNotifications()]);
+  await Promise.allSettled([
+    refreshMe(),
+    loadVehicles(),
+    loadRacers(),
+    loadChallenges(),
+    loadNotifications(),
+  ]);
 };
 
 document.querySelectorAll('[data-auth-tab]').forEach((button) => {
@@ -308,10 +385,13 @@ els.registerForm.addEventListener('submit', async (event) => {
 
 els.logoutBtn.addEventListener('click', () => {
   clearSession();
+  state.challenges = [];
   renderProfile();
   renderVehicles([]);
   renderChallenges([]);
   renderNotifications([]);
+  resetChallengeFormOptions();
+  closeCompleteChallengeDialog();
   showToast('Sesion cerrada');
 });
 
@@ -375,13 +455,15 @@ els.challengesList.addEventListener('click', async (event) => {
     const action = button.dataset.challengeAction;
 
     if (action === 'complete') {
-      const winnerId = window.prompt('ID del ganador');
-      if (!winnerId) return;
+      const challenge = state.challenges.find((current) => current.id === id);
 
-      await request(`/challenges/${id}/complete`, {
-        method: 'PATCH',
-        body: JSON.stringify({ winnerId }),
-      });
+      if (!challenge) {
+        showToast('No se encontro el reto seleccionado', true);
+        return;
+      }
+
+      openCompleteChallengeDialog(challenge);
+      return;
     } else {
       await request(`/challenges/${id}/${action}`, { method: 'PATCH' });
     }
@@ -390,6 +472,45 @@ els.challengesList.addEventListener('click', async (event) => {
     showToast('Reto actualizado');
   } catch (error) {
     showToast(error.message, true);
+  }
+});
+
+els.completeChallengeForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const challengeId = state.pendingCompleteChallengeId;
+  const winnerId = els.winnerSelect.value;
+
+  if (!challengeId) {
+    showToast('No hay reto seleccionado', true);
+    closeCompleteChallengeDialog();
+    return;
+  }
+
+  if (!winnerId) {
+    showToast('Selecciona un ganador', true);
+    return;
+  }
+
+  try {
+    await request(`/challenges/${challengeId}/complete`, {
+      method: 'PATCH',
+      body: JSON.stringify({ winnerId }),
+    });
+
+    closeCompleteChallengeDialog();
+    await refreshDashboard();
+    showToast('Reto actualizado');
+  } catch (error) {
+    showToast(error.message, true);
+  }
+});
+
+els.closeCompleteChallengeModalBtn.addEventListener('click', closeCompleteChallengeDialog);
+els.cancelCompleteChallengeBtn.addEventListener('click', closeCompleteChallengeDialog);
+els.completeChallengeModal.addEventListener('click', (event) => {
+  if (event.target === els.completeChallengeModal) {
+    closeCompleteChallengeDialog();
   }
 });
 
@@ -414,7 +535,9 @@ renderProfile();
 renderVehicles([]);
 renderChallenges([]);
 renderNotifications([]);
+resetChallengeFormOptions();
 refreshDashboard().catch(() => {
   clearSession();
   renderProfile();
+  resetChallengeFormOptions();
 });

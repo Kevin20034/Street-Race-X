@@ -125,6 +125,27 @@
       </section>
     </main>
 
+    <section id="completeChallengeModal" class="modal-overlay hidden" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="completeChallengeTitle">
+        <div class="section-title modal-title-row">
+          <h3 id="completeChallengeTitle">Completar reto</h3>
+          <button id="closeCompleteChallengeModalBtn" class="ghost small" type="button">Cerrar</button>
+        </div>
+        <form id="completeChallengeForm" class="stack">
+          <label>
+            Ganador
+            <select id="winnerSelect" name="winnerId" required>
+              <option value="">Selecciona un participante</option>
+            </select>
+          </label>
+          <div class="modal-actions">
+            <button id="cancelCompleteChallengeBtn" class="ghost" type="button">Cancelar</button>
+            <button type="submit">Guardar resultado</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <aside id="toast" class="toast hidden"></aside>
 
     <script src="/app.js"></script>

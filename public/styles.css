@@ -307,6 +307,37 @@ h2 {
   z-index: 10;
 }
 
+.modal-overlay {
+  align-items: center;
+  background: rgba(7, 10, 14, 0.72);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 16px;
+  position: fixed;
+  z-index: 20;
+}
+
+.modal-card {
+  background: rgba(26, 31, 39, 0.98);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  max-width: 480px;
+  padding: 18px;
+  width: 100%;
+}
+
+.modal-title-row {
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .hidden {
   display: none !important;
 }
